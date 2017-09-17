@@ -38,7 +38,6 @@ class Team extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id'], 'required', 'message' => 'Please select a Team.'],
             [['team', 'team_status_id', 'champ', 'first', 'second', 'wins', 'draws', 'losses', 'since'], 'required'],
             [['team_status_id', 'champ', 'first', 'second', 'wins', 'draws', 'losses', 'rating'], 'integer'],
             [['since', 'last_played'], 'safe'],
