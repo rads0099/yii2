@@ -69,7 +69,7 @@ class EventController extends Controller
 
             $model->occasion_id = $model->occasion_dd;
             $model->location_venue_id = Yii::$app->db->
-                createCommand('SELECT id FROM location_venue WHERE location_id =' . $model_location_dd . ' and venue_id =' . $model->venue_dd)
+                createCommand('SELECT id FROM location_venue WHERE location_id =' . $model->location_dd . ' and venue_id =' . $model->venue_dd)
             ->queryScalar();
             $model->event_type_id = $model->event_type_dd;
             $model->event_category_id = $model->event_category_dd;
