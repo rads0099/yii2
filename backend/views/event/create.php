@@ -11,9 +11,9 @@ $this->params['breadcrumbs'][] = ['label' => 'Events', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="event-create">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
+	<p>
+    <?= Html::a('Return to view', ['event/index'], ['class' => 'fa fa-arrow-circle-left btn btn-primary']) ?>
+     </p>
     <?= $this->render('_form', [
         'model' => $model,
     ]) ?>

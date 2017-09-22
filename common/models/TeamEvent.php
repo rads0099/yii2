@@ -19,7 +19,7 @@ use Yii;
  * @property int $losses
  * @property int $rating
  * @property string $last_played
- *
+ * TODO: add event_id as foreign key in database and generate teamEvent model and crud again using gii
  * @property EventTeam[] $eventTeams
  * @property Player[] $players
  * @property EventType $eventType

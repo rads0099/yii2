@@ -29,7 +29,7 @@ use kartik\select2\Select2;
         'pluginOptions' => [
             'allowClear' => true
         ],
-    ])->label('Occasion');
+    ])->label('Occasion *');
     ?>
     <?= $form->field($model, 'location_dd')->widget(Select2::classname(), [
         'data' => ArrayHelper::map(Location::find()->orderBy('id')->all(),'id','location'),
