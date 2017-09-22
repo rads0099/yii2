@@ -4,9 +4,14 @@ namespace backend\controllers;
 
 use Yii;
 use common\models\Event;
+use common\models\EventTeam;
+use common\models\EventRound;
+use common\models\EventTeamRound;
+use common\models\EventRoundMatch;
 use backend\models\EventSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\db\Exception;
 use yii\filters\VerbFilter;
 
 /**
@@ -87,6 +92,7 @@ class EventController extends Controller
             // $model->date_end = 2017-09-11;
 
             $model->save();
+            Yii::$app->session->setFlash('success','Successfully Create Event');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -129,7 +135,8 @@ class EventController extends Controller
             ->queryScalar();
 
             $model->save();
-            return $this->redirect(['view', 'id' => $model->id]);
+                Yii::$app->session->setFlash('success','Successfully Updated the Event');
+                return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -146,10 +153,147 @@ class EventController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-
+        Yii::$app->session->setFlash('success','Successfully Deleted the Event');
         return $this->redirect(['index']);
     }
 
+    public function actionFinalize($id) {
+        $model = $this->findModel($id);
+        $numOfTeams = count($model->eventTeams);
+        if ($numOfTeams >= $model->min_team) {
+            $system = $model->matchSystem->system;
+            $var = "even";
+            switch($system) {
+                case "Single Elimination":
+                    break;
+                case "Double Elimination":
+                    break;
+                case "Round Robin":
+                    if ($system === "Round Robin") {
+                        // if number of teams is not even, add Bye
+                        $bye = 0;
+                        if ($numOfTeams % 2 === 1) {
+                            $numOfTeams++;
+                            $eventTeam = new EventTeam();
+                            $eventTeam->event_id = $id;
+                            $eventTeam->team_event_id = Yii::$app->db->
+                                createCommand('SELECT id FROM team_event WHERE team_id =' . 0 . ' and event_type_id =' . $model->event_type_id)
+                            ->queryScalar();
+                            $eventTeam->event_team_status_id = 2;
+                            $eventTeam->team_order = $numOfTeams;
+                            // $eventTeam->total_wins = 0;
+                            // $eventTeam->total_draws = 0;
+                            // $eventTeam->total_loss = 0;
+                            $eventTeam->save();
+                            $bye++;
+                        }
+                        //check if there is a Bye
+                        if ($bye == 0)  {
+                            $eventTeam = new EventTeam();
+                            $eventTeam = $model->eventTeams[$numOfTeams-1];
+                            if ($eventTeam->teamEvent->team_id == 0) {
+                                $bye++;
+                            }
+                        }
+                        // assign seed number (team_order);
+                        $seed = range(1,$numOfTeams-$bye);
+                        for ($ctr = 0; $ctr < $numOfTeams-$bye; $ctr++) {
+                            $eventTeam = new EventTeam();
+                            $eventTeam = $model->eventTeams[$ctr];
+                            shuffle($seed);
+                            // if ($eventTeam->teamEvent->team_id != 0) {
+                                $eventTeam->team_order = array_pop($seed);
+                            // }
+                            $eventTeam->save(false);
+                        }
+
+                        // create rounds based on number of teams (num of teams - 1)
+                        // for ($ctr = 1; $ctr < $numOfTeams; $ctr++) {
+                        //     try {
+                        //         $eventRound = new EventRound();
+                        //         $eventRound->event_id = $id;
+                        //         $eventRound->round = $ctr;
+                        //         $eventRound->round_status_id = 1;
+                        //         // $eventRound->date_start = '0000-00-00';
+                        //         $eventRound->save();
+                        //     } catch (Exception $e) {
+                        //         throw new Exception("Duplicate Entry");
+                        //     }
+                        //
+                        // }
+
+                        // create event team rounds
+                        //     $numOfRounds = count($model->eventRounds);
+                        //     try {
+                        //         foreach ($model->eventTeams as $eT) :
+                        //             foreach ($model->eventRounds as $eR) :
+                        //                 $eventTeamRound = new EventTeamRound();
+                        //                 $eventTeamRound->event_team_id = $eT->id;
+                        //                 $eventTeamRound->event_round_id = $eR->id;
+                        //                 $eventTeamRound->save();
+                        //             endforeach;
+                        //         endforeach;
+                        //     } catch (Exception $e) {
+                        //         throw new Exception("Duplicate Entry");
+                        //     }
+
+
+                    //     * @property string $id
+                    //    * @property string $event_team1_round_id
+                    //    * @property string $event_team2_round_id
+                    //    * @property int $match_status_id
+                    //    * @property int $team1_score
+                    //    * @property int $team2_score
+                    //    *
+                    //    * @property EventTeamRound $eventTeam1Round
+                    //    * @property EventTeamRound $evshuffle($array);entTeam2Round
+                    //    * @property MatchStatus $matchStatus
+
+                        //create event_round_match
+                        $seed = range(1,$numOfTeams);
+                        $away = array_splice($seed,(count($seed)/2));
+                        $home = $seed;
+                        for ($i=0; $i < count($home)+count($away)-1; $i++){
+                            for ($j=0; $j<count($home); $j++){
+                                $eventTeamHome = EventTeam::find()->where(['team_order' => $home[$j]])->one();
+                                $eventTeamAway = EventTeam::find()->where(['team_order' => $away[$j]])->one();
+
+
+                                $eventRoundMatch = new EventRoundMatch();
+                                $eventRoundMatch->event_team1_round_id = $eventTeamHome->eventTeamRounds[$i]->id;
+                                $eventRoundMatch->event_team2_round_id  =$eventTeamAway->eventTeamRounds[$i]->id;
+                                $eventRoundMatch->match_status_id = 1;
+                                $eventRoundMatch->team1_score = 0;
+                                $eventRoundMatch->team2_score = 0;
+                                $eventRoundMatch->save();
+                            }
+                            if(count($home)+count($away)-1 > 2){
+                                $splicedHome = array_splice($home,1,1);
+                                $shiftedSplicedHome = array_shift($splicedHome);
+                                array_unshift($away, $shiftedSplicedHome);
+                                array_push($home,array_pop($away));
+                            }
+                        }
+
+
+                $var = "RR" . $var . "numOf" . $numOfTeams;
+                }
+                    break;
+                case "Plain Ranking":
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            $var = "insufficent num of team";
+        }
+        // make finalize button for event_team
+        // 	count number of teams in selected event
+        // 	create event rounds based on match_system formula
+        // 	create team round based on event_round
+        // 	give team order based on sort_order
+        return $this->redirect(['view', 'var' => $var]);
+    }
     /**
      * Finds the Event model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
