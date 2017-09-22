@@ -41,7 +41,8 @@ class TeamSearch extends Team
      */
     public function search($params)
     {
-        $query = Team::find();
+        //hides team 0 = Bye
+        $query = Team::find()->where('`team`.`id` != 0');
         $query->joinWith('teamStatus');
 
         // add conditions that should always apply here
