@@ -69,7 +69,9 @@ class EventTeamController extends Controller
             ->queryScalar();
             //TODO: check event type on both event & team_event table
             $model->event_team_status_id = 1;
+            $model->team_order = 0;
             $model->save(false);
+            Yii::$app->session->setFlash('success','Successfully Created');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -91,6 +93,7 @@ class EventTeamController extends Controller
         $model->event_type_name = $model->teamEvent->event_type_id;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('success','Successfully Updated');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
@@ -108,7 +111,7 @@ class EventTeamController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-
+        Yii::$app->session->setFlash('success','Successfully Delete');
         return $this->redirect(['index']);
     }
 

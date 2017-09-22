@@ -15,8 +15,6 @@ class EventTeamSearch extends EventTeam
     /**
      * @inheritdoc
      */
-    public $event_type_name;
-    public $team_name;
     public function rules()
     {
         return [
