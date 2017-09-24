@@ -5,7 +5,7 @@ namespace common\models;
 use Yii;
 
 /**
- * This is the model class for table "location".
+ * This is the model class for table "location" test.
  *
  * @property int $id
  * @property string $location
