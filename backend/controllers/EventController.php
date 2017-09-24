@@ -8,6 +8,7 @@ use common\models\EventTeam;
 use common\models\EventRound;
 use common\models\EventTeamRound;
 use common\models\EventRoundMatch;
+use common\models\TeamEvent;
 use backend\models\EventSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -184,29 +185,32 @@ class EventController extends Controller
                             // $eventTeam->total_wins = 0;
                             // $eventTeam->total_draws = 0;
                             // $eventTeam->total_loss = 0;
-                            $eventTeam->save();
+                            $eventTeam->save(false);
                             $bye++;
                         }
                         //check if there is a Bye
                         if ($bye == 0)  {
                             $eventTeam = new EventTeam();
-                            $eventTeam = $model->eventTeams[$numOfTeams-1];
-                            if ($eventTeam->teamEvent->team_id == 0) {
+                            $eventTeam = $model->eventTeams[0];
+
+                            $teamEvent = TeamEvent::find()->where(['id' => $eventTeam->team_event_id])->one();
+                            if ($teamEvent->team_id == '0') {
                                 $bye++;
                             }
                         }
-                        // assign seed number (team_order);
+                        //
+                        // // assign seed number (team_order);
                         $seed = range(1,$numOfTeams-$bye);
-                        for ($ctr = 0; $ctr < $numOfTeams-$bye; $ctr++) {
+                        shuffle($seed);
+                        for ($ctr = 0 + $bye; $ctr < $numOfTeams; $ctr++) {
                             $eventTeam = new EventTeam();
                             $eventTeam = $model->eventTeams[$ctr];
-                            shuffle($seed);
                             // if ($eventTeam->teamEvent->team_id != 0) {
                                 $eventTeam->team_order = array_pop($seed);
                             // }
                             $eventTeam->save(false);
                         }
-
+                        //
                         // create rounds based on number of teams (num of teams - 1)
                         // for ($ctr = 1; $ctr < $numOfTeams; $ctr++) {
                         //     try {
@@ -215,44 +219,33 @@ class EventController extends Controller
                         //         $eventRound->round = $ctr;
                         //         $eventRound->round_status_id = 1;
                         //         // $eventRound->date_start = '0000-00-00';
-                        //         $eventRound->save();
+                        //         $eventRound->save(false);
                         //     } catch (Exception $e) {
                         //         throw new Exception("Duplicate Entry");
                         //     }
                         //
                         // }
-
-                        // create event team rounds
-                        //     $numOfRounds = count($model->eventRounds);
-                        //     try {
-                        //         foreach ($model->eventTeams as $eT) :
-                        //             foreach ($model->eventRounds as $eR) :
-                        //                 $eventTeamRound = new EventTeamRound();
-                        //                 $eventTeamRound->event_team_id = $eT->id;
-                        //                 $eventTeamRound->event_round_id = $eR->id;
-                        //                 $eventTeamRound->save();
-                        //             endforeach;
-                        //         endforeach;
-                        //     } catch (Exception $e) {
-                        //         throw new Exception("Duplicate Entry");
-                        //     }
-
-
-                    //     * @property string $id
-                    //    * @property string $event_team1_round_id
-                    //    * @property string $event_team2_round_id
-                    //    * @property int $match_status_id
-                    //    * @property int $team1_score
-                    //    * @property int $team2_score
-                    //    *
-                    //    * @property EventTeamRound $eventTeam1Round
-                    //    * @property EventTeamRound $evshuffle($array);entTeam2Round
-                    //    * @property MatchStatus $matchStatus
-
-                        //create event_round_match
+                        //
+                        // // create event team rounds
+                            // $numOfRounds = count($model->eventRounds);
+                            // try {
+                            //     foreach ($model->eventTeams as $eT) :
+                            //         foreach ($model->eventRounds as $eR) :
+                            //             $eventTeamRound = new EventTeamRound();
+                            //             $eventTeamRound->event_team_id = $eT->id;
+                            //             $eventTeamRound->event_round_id = $eR->id;
+                            //             $eventTeamRound->save(false);
+                            //         endforeach;
+                            //     endforeach;
+                            // } catch (Exception $e) {
+                            //     throw new Exception("Duplicate Entry");
+                            // }
+                        //
+                        // //create event_round_match
                         $seed = range(1,$numOfTeams);
                         $away = array_splice($seed,(count($seed)/2));
                         $home = $seed;
+                        // $rounds = count($seed) - 1;
                         for ($i=0; $i < count($home)+count($away)-1; $i++){
                             for ($j=0; $j<count($home); $j++){
                                 $eventTeamHome = EventTeam::find()->where(['team_order' => $home[$j]])->one();
@@ -261,11 +254,11 @@ class EventController extends Controller
 
                                 $eventRoundMatch = new EventRoundMatch();
                                 $eventRoundMatch->event_team1_round_id = $eventTeamHome->eventTeamRounds[$i]->id;
-                                $eventRoundMatch->event_team2_round_id  =$eventTeamAway->eventTeamRounds[$i]->id;
+                                $eventRoundMatch->event_team2_round_id = $eventTeamAway->eventTeamRounds[$i]->id;
                                 $eventRoundMatch->match_status_id = 1;
                                 $eventRoundMatch->team1_score = 0;
                                 $eventRoundMatch->team2_score = 0;
-                                $eventRoundMatch->save();
+                                $eventRoundMatch->save(false);
                             }
                             if(count($home)+count($away)-1 > 2){
                                 $splicedHome = array_splice($home,1,1);
@@ -276,7 +269,7 @@ class EventController extends Controller
                         }
 
 
-                $var = "RR" . $var . "numOf" . $numOfTeams;
+                $var = "RR" . $var . "numOf" . $numOfTeams . " bye" . $bye;
                 }
                     break;
                 case "Plain Ranking":
