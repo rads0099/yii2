@@ -6,7 +6,12 @@
 * UNIMPORTANT UPDATE
 * ok push mo na commit mo
 * push ko na
+<<<<<<< HEAD
 *edit na
+=======
+* try
+* try part 2
+>>>>>>> 4c5707b1757f145e2f93b6493d388ba7c5a62a68
 */
 
 namespace backend\models;
@@ -78,7 +83,10 @@ class EventRoundMatchSearch extends EventRoundMatch
         return $dataProvider;
     }
 }
+<<<<<<< HEAD
+=======
 >>>>>>> ba9e862e4b410f45ed276679cf6a464e86e2e580
+>>>>>>> 0f6c49c458af48c4f040b16b2070b56dd5516fa1
 */
 
 namespace backend\models;
