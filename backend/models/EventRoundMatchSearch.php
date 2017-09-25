@@ -1,4 +1,3 @@
-<<<<<<< current
 <?php
 /**
 *for the sample commit, delete me after
@@ -6,6 +5,7 @@
 * hindi man kulang
 * UNIMPORTANT UPDATE
 * ok push mo na commit mo
+* try 
 */
 
 namespace backend\models;
@@ -77,18 +77,6 @@ class EventRoundMatchSearch extends EventRoundMatch
         return $dataProvider;
     }
 }
-=======
-<?php
-/**
-*for the sample commit, delete me after
-* kulang mga files?
-* hindi man kulang
-* UNIMPORTANT UPDATE
-<<<<<<< HEAD
-* ok push mo na commit mo
-=======
-*IMPORTANT UPDATE
->>>>>>> a8262335bd94c9266ecf4047ce245a93f4c0996c
 */
 
 namespace backend\models;
