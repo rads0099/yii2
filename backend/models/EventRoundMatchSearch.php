@@ -5,7 +5,11 @@
 * hindi man kulang
 * UNIMPORTANT UPDATE
 * ok push mo na commit mo
+<<<<<<< HEAD
 * try 
+=======
+* push ko na
+>>>>>>> 0f6c49c458af48c4f040b16b2070b56dd5516fa1
 */
 
 namespace backend\models;
@@ -77,6 +81,10 @@ class EventRoundMatchSearch extends EventRoundMatch
         return $dataProvider;
     }
 }
+<<<<<<< HEAD
+=======
+>>>>>>> ba9e862e4b410f45ed276679cf6a464e86e2e580
+>>>>>>> 0f6c49c458af48c4f040b16b2070b56dd5516fa1
 */
 
 namespace backend\models;
