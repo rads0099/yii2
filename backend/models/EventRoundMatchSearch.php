@@ -1,8 +1,10 @@
 <?php
 /**
 *for the sample commit, delete me after
+* kulang mga files?
+* hindi man kulang
 */
-//kulang mga files?
+
 namespace backend\models;
 
 use Yii;
