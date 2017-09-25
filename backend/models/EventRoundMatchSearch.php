@@ -5,11 +5,9 @@
 * hindi man kulang
 * UNIMPORTANT UPDATE
 * ok push mo na commit mo
-<<<<<<< HEAD
-* try 
-=======
 * push ko na
->>>>>>> 0f6c49c458af48c4f040b16b2070b56dd5516fa1
+* try
+* try part 2
 */
 
 namespace backend\models;
