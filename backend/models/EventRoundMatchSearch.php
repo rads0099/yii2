@@ -1,5 +1,7 @@
 <?php
-
+/**
+*for the sample commit, delete me after
+*/
 namespace backend\models;
 
 use Yii;
