@@ -12,6 +12,7 @@ use common\models\TeamEvent;
 use backend\models\EventSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\ForbiddenHttpException;
 use yii\db\Exception;
 use yii\filters\VerbFilter;
 
@@ -57,9 +58,13 @@ class EventController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        if (Yii::$app->user->can('view-event')) {
+            return $this->render('view', [
+                'model' => $this->findModel($id),
+            ]);
+        } else {
+            throw new ForbiddenHttpException;
+        }
     }
 
     /**
@@ -69,37 +74,42 @@ class EventController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Event();
+        if (Yii::$app->user->can('create-event')) {
+            $model = new Event();
 
-        if ($model->load(Yii::$app->request->post())) {
+            if ($model->load(Yii::$app->request->post())) {
 
-            $model->occasion_id = $model->occasion_dd;
-            $model->location_venue_id = Yii::$app->db->
-                createCommand('SELECT id FROM location_venue WHERE location_id =' . $model->location_dd . ' and venue_id =' . $model->venue_dd)
-            ->queryScalar();
-            $model->event_type_id = $model->event_type_dd;
-            $model->event_category_id = $model->event_category_dd;
-            $model->match_system_id = $model->match_system_dd;
-            $model->sort_order_id =  Yii::$app->db->
-                createCommand('SELECT id FROM sort_order WHERE sort_id =' . $model->sort_dd . ' and order_id =' . $model->order_dd)
-            ->queryScalar();
-            $model->event_status_id = 1;
-            $model->min_team = 2;
-            $model->max_team = 12;
-            // $model->champ = 2;
-            // $model->first = 2;
-            // $model->second = 2;
-            // $model->date_start = 2017-09-11;
-            // $model->date_end = 2017-09-11;
+                $model->occasion_id = $model->occasion_dd;
+                $model->location_venue_id = Yii::$app->db->
+                    createCommand('SELECT id FROM location_venue WHERE location_id =' . $model->location_dd . ' and venue_id =' . $model->venue_dd)
+                ->queryScalar();
+                $model->event_type_id = $model->event_type_dd;
+                $model->event_category_id = $model->event_category_dd;
+                $model->match_system_id = $model->match_system_dd;
+                $model->sort_order_id =  Yii::$app->db->
+                    createCommand('SELECT id FROM sort_order WHERE sort_id =' . $model->sort_dd . ' and order_id =' . $model->order_dd)
+                ->queryScalar();
+                $model->event_status_id = 1;
+                $model->min_team = 2;
+                $model->max_team = 12;
+                // $model->champ = 2;
+                // $model->first = 2;
+                // $model->second = 2;
+                // $model->date_start = 2017-09-11;
+                // $model->date_end = 2017-09-11;
 
-            $model->save();
-            Yii::$app->session->setFlash('success','Successfully Create Event');
-            return $this->redirect(['view', 'id' => $model->id]);
+                $model->save();
+                Yii::$app->session->setFlash('success','Successfully Create Event');
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                return $this->render('create', [
+                    'model' => $model,
+                ]);
+            }
         } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+          throw new ForbiddenHttpException;
         }
+
     }
 
     /**
@@ -110,38 +120,42 @@ class EventController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        if (Yii::$app->user->can('update-event')) {
+            $model = $this->findModel($id);
 
-        $model->occasion_dd = $model->occasion_id;
-        $model->location_dd = $model->locationVenue->location_id;
-        $model->venue_dd = $model->locationVenue->venue_id;
-        $model->event_type_dd = $model->event_type_id;
-        // $eventStatus->id = $model->event_status_id;
-        $model->event_category_dd = $model->event_category_id;
-        $model->match_system_dd = $model->match_system_id;
-        $model->sort_dd = $model->sortOrder->sort_id;
-        $model->order_dd = $model->sortOrder->order_id;
+            $model->occasion_dd = $model->occasion_id;
+            $model->location_dd = $model->locationVenue->location_id;
+            $model->venue_dd = $model->locationVenue->venue_id;
+            $model->event_type_dd = $model->event_type_id;
+            // $eventStatus->id = $model->event_status_id;
+            $model->event_category_dd = $model->event_category_id;
+            $model->match_system_dd = $model->match_system_id;
+            $model->sort_dd = $model->sortOrder->sort_id;
+            $model->order_dd = $model->sortOrder->order_id;
 
-        if ($model->load(Yii::$app->request->post())) {
-            $model->occasion_id = $model->occasion_dd;
-            $model->location_venue_id = Yii::$app->db->
-                createCommand('SELECT id FROM location_venue WHERE location_id =' . $model->location_dd . ' and venue_id =' . $model->venue_dd)
-            ->queryScalar();
-            $model->event_type_id =  $model->event_type_dd;
-            $model->event_category_id = $model->event_category_dd;
-            // $model->event_status_id = $eventStatus->id;
-            $model->match_system_id = $model->match_system_dd;
-            $model->sort_order_id = Yii::$app->db->
-                createCommand('SELECT id FROM sort_order WHERE sort_id =' . $model->sort_dd . ' and order_id =' . $model->order_dd)
-            ->queryScalar();
+            if ($model->load(Yii::$app->request->post())) {
+                $model->occasion_id = $model->occasion_dd;
+                $model->location_venue_id = Yii::$app->db->
+                    createCommand('SELECT id FROM location_venue WHERE location_id =' . $model->location_dd . ' and venue_id =' . $model->venue_dd)
+                ->queryScalar();
+                $model->event_type_id =  $model->event_type_dd;
+                $model->event_category_id = $model->event_category_dd;
+                // $model->event_status_id = $eventStatus->id;
+                $model->match_system_id = $model->match_system_dd;
+                $model->sort_order_id = Yii::$app->db->
+                    createCommand('SELECT id FROM sort_order WHERE sort_id =' . $model->sort_dd . ' and order_id =' . $model->order_dd)
+                ->queryScalar();
 
-            $model->save();
-                Yii::$app->session->setFlash('success','Successfully Updated the Event');
-                return $this->redirect(['view', 'id' => $model->id]);
+                $model->save();
+                    Yii::$app->session->setFlash('success','Successfully Updated the Event');
+                    return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                return $this->render('update', [
+                    'model' => $model,
+                ]);
+            }
         } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+            throw new ForbiddenHttpException;
         }
     }
 
@@ -153,12 +167,20 @@ class EventController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-        Yii::$app->session->setFlash('success','Successfully Deleted the Event');
-        return $this->redirect(['index']);
+        if (Yii::$app->user->can('delete-event')) {
+            $this->findModel($id)->delete();
+            Yii::$app->session->setFlash('success','Successfully Deleted the Event');
+            return $this->redirect(['index']);
+        } else {
+            throw new ForbiddenHttpException;
+        }
     }
 
     public function actionFinalize($id) {
+        // if (Yii::$app->user->can('update-event')) {
+        // } else {
+        //     throw new ForbiddenHttpException;
+        // }
         $model = $this->findModel($id);
         $numOfTeams = count($model->eventTeams);
         if ($numOfTeams >= $model->min_team) {

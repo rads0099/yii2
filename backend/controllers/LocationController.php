@@ -7,6 +7,7 @@ use common\models\Location;
 use backend\models\LocationSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\ForbiddenHttpException;
 use yii\filters\VerbFilter;
 
 /**
@@ -51,9 +52,13 @@ class LocationController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        if (Yii::$app->user->can('view-location')) {
+            return $this->render('view', [
+                'model' => $this->findModel($id),
+            ]);
+        } else {
+            throw new ForbiddenHttpException;
+        }
     }
 
     /**
@@ -63,14 +68,18 @@ class LocationController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Location();
+        if (Yii::$app->user->can('create-location')) {
+            $model = new Location();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                return $this->render('create', [
+                    'model' => $model,
+                ]);
+            }
         } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+            throw new ForbiddenHttpException;
         }
     }
 
@@ -82,14 +91,18 @@ class LocationController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        if (Yii::$app->user->can('update-location')) {
+            $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                return $this->render('update', [
+                    'model' => $model,
+                ]);
+            }
         } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+            throw new ForbiddenHttpException;
         }
     }
 
@@ -101,9 +114,12 @@ class LocationController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        if (Yii::$app->user->can('delete-location')) {
+            $this->findModel($id)->delete();
+            return $this->redirect(['index']);
+        } else {
+            throw new ForbiddenHttpException;
+        }
     }
 
     /**
