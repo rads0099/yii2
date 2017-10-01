@@ -9,6 +9,8 @@ use common\models\Team;
 use backend\models\PlayerSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\ForbiddenHttpException;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 
 /**
@@ -22,6 +24,20 @@ class PlayerController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => [''],
+                        'allow' => true,
+                    ],
+                    [
+                        'actions' => ['index', 'create', 'view', 'update', 'delete'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -53,9 +69,13 @@ class PlayerController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        if (Yii::$app->user->can('view-player')) {
+            return $this->render('view', [
+                'model' => $this->findModel($id),
+            ]);
+        } else {
+            throw new ForbiddenHttpException;
+        }
     }
 
     /**
@@ -65,31 +85,35 @@ class PlayerController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Player();
-        $eventType = new EventType();
-        $team = new Team();
+        if (Yii::$app->user->can('create-player')) {
+            $model = new Player();
+            $eventType = new EventType();
+            $team = new Team();
 
-        if ($model->load(Yii::$app->request->post()) &&
-        $eventType->load(Yii::$app->request->post()) &&
-             $team->load(Yii::$app->request->post())) {
-            //TODO: erase this comment
-            // $temp->team_event_id = (new \yii\db\Query())
-            //     ->select('id')
-            //     ->from('team_event')
-            //     ->where('event_type_id=:event_type_id', [':event_type_id', $eventType->id])
-            //     ->one();
-            // $model->team_event_id = $temp->team_event_id;
-            $model->team_event_id = Yii::$app->db->
-                createCommand('SELECT id FROM team_event WHERE event_type_id =' . $eventType->id . ' and team_id =' . $team->id)
-            ->queryScalar();
-            $model->save();
-            return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load(Yii::$app->request->post()) &&
+            $eventType->load(Yii::$app->request->post()) &&
+                 $team->load(Yii::$app->request->post())) {
+                //TODO: erase this comment
+                // $temp->team_event_id = (new \yii\db\Query())
+                //     ->select('id')
+                //     ->from('team_event')
+                //     ->where('event_type_id=:event_type_id', [':event_type_id', $eventType->id])
+                //     ->one();
+                // $model->team_event_id = $temp->team_event_id;
+                $model->team_event_id = Yii::$app->db->
+                    createCommand('SELECT id FROM team_event WHERE event_type_id =' . $eventType->id . ' and team_id =' . $team->id)
+                ->queryScalar();
+                $model->save();
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                return $this->render('create', [
+                    'model' => $model,
+                    'eventType' => $eventType,
+                    'team' => $team,
+                ]);
+            }
         } else {
-            return $this->render('create', [
-                'model' => $model,
-                'eventType' => $eventType,
-                'team' => $team,
-            ]);
+            throw new ForbiddenHttpException;
         }
     }
 
@@ -101,28 +125,32 @@ class PlayerController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-        $eventType = new EventType();
-        $team = new Team();
+        if (Yii::$app->user->can('update-player')) {
+            $model = $this->findModel($id);
+            $eventType = new EventType();
+            $team = new Team();
 
-        $eventType->id = $model->teamEvent->event_type_id;
-        $team->id = $model->teamEvent->team_id;
+            $eventType->id = $model->teamEvent->event_type_id;
+            $team->id = $model->teamEvent->team_id;
 
-        if ($model->load(Yii::$app->request->post()) &&
-        $eventType->load(Yii::$app->request->post()) &&
-             $team->load(Yii::$app->request->post())) {
+            if ($model->load(Yii::$app->request->post()) &&
+            $eventType->load(Yii::$app->request->post()) &&
+                 $team->load(Yii::$app->request->post())) {
 
-            $model->team_event_id = Yii::$app->db->
-                createCommand('SELECT id FROM team_event WHERE event_type_id =' . $eventType->id . ' and team_id =' . $team->id)
-            ->queryScalar();
-            $model->save();
-            return $this->redirect(['view', 'id' => $model->id]);
+                $model->team_event_id = Yii::$app->db->
+                    createCommand('SELECT id FROM team_event WHERE event_type_id =' . $eventType->id . ' and team_id =' . $team->id)
+                ->queryScalar();
+                $model->save();
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                return $this->render('update', [
+                    'model' => $model,
+                    'eventType' => $eventType,
+                    'team' => $team,
+                ]);
+            }
         } else {
-            return $this->render('update', [
-                'model' => $model,
-                'eventType' => $eventType,
-                'team' => $team,
-            ]);
+            throw new ForbiddenHttpException;
         }
     }
 
@@ -134,9 +162,12 @@ class PlayerController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        if (Yii::$app->user->can('delete-player')) {
+            $this->findModel($id)->delete();
+            return $this->redirect(['index']);
+        } else {
+            throw new ForbiddenHttpException;
+        }
     }
 
     /**

@@ -7,6 +7,8 @@ use common\models\EventTeam;
 use backend\models\EventTeamSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\ForbiddenHttpException;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 /**
  * EventTeamController implements the CRUD actions for EventTeam model.
@@ -19,6 +21,20 @@ class EventTeamController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => [''],
+                        'allow' => true,
+                    ],
+                    [
+                        'actions' => ['index', 'create', 'view', 'update', 'delete'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -50,9 +66,14 @@ class EventTeamController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        if (Yii::$app->user->can('view-event-team')) {
+
+            return $this->render('view', [
+                'model' => $this->findModel($id),
+            ]);
+        } else {
+            throw new ForbiddenHttpException;
+        }
     }
 
     /**
@@ -62,21 +83,25 @@ class EventTeamController extends Controller
      */
     public function actionCreate()
     {
-        $model = new EventTeam();
-        if ($model->load(Yii::$app->request->post())) {
-            $model->team_event_id = Yii::$app->db->
-                createCommand('SELECT id FROM team_event WHERE team_id =' . $model->team_name . ' and event_type_id =' . $model->event_type_name)
-            ->queryScalar();
-            //TODO: check event type on both event & team_event table
-            $model->event_team_status_id = 1;
-            $model->team_order = 0;
-            $model->save(false);
-            Yii::$app->session->setFlash('success','Successfully Created');
-            return $this->redirect(['view', 'id' => $model->id]);
+        if (Yii::$app->user->can('create-event-team')) {
+            $model = new EventTeam();
+            if ($model->load(Yii::$app->request->post())) {
+                $model->team_event_id = Yii::$app->db->
+                    createCommand('SELECT id FROM team_event WHERE team_id =' . $model->team_name . ' and event_type_id =' . $model->event_type_name)
+                ->queryScalar();
+                //TODO: check event type on both event & team_event table
+                $model->event_team_status_id = 1;
+                $model->team_order = 0;
+                $model->save(false);
+                Yii::$app->session->setFlash('success','Successfully Created');
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                return $this->render('create', [
+                    'model' => $model,
+                ]);
+            }
         } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+            throw new ForbiddenHttpException;
         }
     }
 
@@ -88,17 +113,21 @@ class EventTeamController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-        $model->team_name = $model->teamEvent->team_id;
-        $model->event_type_name = $model->teamEvent->event_type_id;
+        if (Yii::$app->user->can('update-event-team')) {
+            $model = $this->findModel($id);
+            $model->team_name = $model->teamEvent->team_id;
+            $model->event_type_name = $model->teamEvent->event_type_id;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Yii::$app->session->setFlash('success','Successfully Updated');
-            return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                Yii::$app->session->setFlash('success','Successfully Updated');
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                return $this->render('update', [
+                    'model' => $model,
+                ]);
+            }
         } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+            throw new ForbiddenHttpException;
         }
     }
 
@@ -110,9 +139,13 @@ class EventTeamController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-        Yii::$app->session->setFlash('success','Successfully Delete');
-        return $this->redirect(['index']);
+        if (Yii::$app->user->can('delete-event-team')) {
+            $this->findModel($id)->delete();
+            Yii::$app->session->setFlash('success','Successfully Delete');
+            return $this->redirect(['index']);
+        } else {
+            throw new ForbiddenHttpException;
+        }
     }
 
     /**
