@@ -21,11 +21,24 @@ $fieldOptions2 = [
 
 <div class="login-box">
     <div class="login-logo">
-        <a href="#"><b>Admin</b>LTE</a>
+        <div class="row">
+            <div class="col-md-2">
+                <img src="../../frontend/web/images/cca-icon.png" class="animated fadeIn" width="60spx"/>
+            </div>
+            <div class="col-md-10">
+                <h3>City College ofAngeles</h3>
+            </div>
+        </div>
     </div>
+
     <!-- /.login-logo -->
     <div class="login-box-body">
         <p class="login-box-msg">Sign in to start your session</p>
+        <?php if (Yii::$app->session->hasFlash('success')): ?>
+          <div class="alert alert-success alert-dismissable">
+          <?= Yii::$app->session->getFlash('success') ?>
+          </div>
+        <?php endif; ?>
 
         <?php $form = ActiveForm::begin(['id' => 'login-form', 'enableClientValidation' => false]); ?>
 
@@ -40,11 +53,15 @@ $fieldOptions2 = [
             ->passwordInput(['placeholder' => $model->getAttributeLabel('password')]) ?>
 
         <div class="row">
-            <div class="col-xs-8">
+            <!-- <div class="col-xs-8">
                 <?= $form->field($model, 'rememberMe')->checkbox() ?>
-            </div>
+            </div> -->
             <!-- /.col -->
-            <div class="col-xs-4">
+            <div class="col-xs-6">
+                <?= Html::a('Sign up', ['/site/signup'], ['class'=>'btn btn-primary btn-block btn-flat','name' => 'signup-button']) ?>
+
+            </div>
+            <div class="col-xs-6">
                 <?= Html::submitButton('Sign in', ['class' => 'btn btn-primary btn-block btn-flat', 'name' => 'login-button']) ?>
             </div>
             <!-- /.col -->
@@ -63,8 +80,6 @@ $fieldOptions2 = [
         <!-- /.social-auth-links -->
 
         <a href="#">I forgot my password</a><br>
-        <a href="register.html" class="text-center">Register a new membership</a>
-
     </div>
     <!-- /.login-box-body -->
 </div><!-- /.login-box -->

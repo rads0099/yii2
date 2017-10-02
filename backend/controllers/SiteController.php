@@ -2,6 +2,7 @@
 namespace backend\controllers;
 
 use Yii;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -98,11 +99,14 @@ class SiteController extends Controller
 
     public function actionSignup()
     {
+        $this->layout = '/main-login';
         $model = new SignupForm();
         if ($model->load(Yii::$app->request->post())) {
             if ($user = $model->signup()) {
+                Yii::$app->session->setFlash('success','Successfully Signup');
+                return Yii::$app->response->redirect(Url::to(['site/login']));
                 if (Yii::$app->getUser()->login($user)) {
-                    return $this->goHome();
+                    return Yii::$app->response->redirect(Url::to(['site/login']));
                 }
             }
         }

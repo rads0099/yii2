@@ -39,6 +39,7 @@
                     ['label' => 'Player', 'icon' => 'user', 'url' => ['player/index']],
                     ['label' => 'Team', 'icon' => 'users', 'url' => ['#']],
                     ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
+                
                     /*[
                         'label' => 'Same tools',
                         'icon' => 'share',
