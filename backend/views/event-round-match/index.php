@@ -25,12 +25,41 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'event_team1_round_id',
-            'event_team2_round_id',
-            'match_status_id',
+            // 'id',
+            // [
+            //     'label' => 'Occasion',
+            //     'attribute' => 'event_team2_round_id',
+            //     'value' => 'eventTeamRound.$event_round_id',
+            // ],
+            [
+                'label' => 'Event',
+                'attribute' => 'event_team2_round_id',
+                'value' => 'eventTeam2Round.eventTeam.event.event'
+            ],
+            [
+                'label' => 'Round',
+                'attribute' => 'event_team2_round_id',
+                'value' => 'eventTeam2Round.eventRound.round'
+            ],
+            [
+                'label' => 'Team 1',
+                'attribute' => 'event_team1_round_id',
+                'value' => 'eventTeam1Round.eventTeam.teamEvent.team.team'
+            ],
+            [
+                'label' => 'Team 2',
+                'attribute' => 'event_team2_round_id',
+                'value' => 'eventTeam2Round.eventTeam.teamEvent.team.team'
+            ],
+            // 'event_team1_round_id',
+            // 'event_team2_round_id',
+            // [
+            //     'label' => 'Match Status',
+            //     'attribute' => 'match_status_id',
+            //     'value' => 'matchStatus.description'
+            // ],
             'team1_score',
-            // 'team2_score',
+            'team2_score',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
