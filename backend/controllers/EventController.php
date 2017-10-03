@@ -36,7 +36,7 @@ class EventController extends Controller
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['index', 'create', 'view', 'update', 'delete'],
+                        'actions' => ['index', 'create', 'view', 'update', 'delete', 'finalize'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -249,54 +249,56 @@ class EventController extends Controller
                         }
                         //
                         // create rounds based on number of teams (num of teams - 1)
-                        // for ($ctr = 1; $ctr < $numOfTeams; $ctr++) {
-                        //     try {
-                        //         $eventRound = new EventRound();
-                        //         $eventRound->event_id = $id;
-                        //         $eventRound->round = $ctr;
-                        //         $eventRound->round_status_id = 1;
-                        //         // $eventRound->date_start = '0000-00-00';
-                        //         $eventRound->save(false);
-                        //     } catch (Exception $e) {
-                        //         throw new Exception("Duplicate Entry");
-                        //     }
+                        for ($ctr = 1; $ctr < $numOfTeams; $ctr++) {
+                            try {
+                                $eventRound = new EventRound();
+                                $eventRound->event_id = $id;
+                                $eventRound->round = $ctr;
+                                $eventRound->round_status_id = 1;
+                                // $eventRound->date_start = '0000-00-00';
+                                $eventRound->save(false);
+                            } catch (Exception $e) {
+                                throw new Exception("Duplicate Entry");
+                            }
+
+                        }
                         //
-                        // }
-                        //
-                        // // create event team rounds
-                            // $numOfRounds = count($model->eventRounds);
-                            // try {
-                            //     foreach ($model->eventTeams as $eT) :
-                            //         foreach ($model->eventRounds as $eR) :
-                            //             $eventTeamRound = new EventTeamRound();
-                            //             $eventTeamRound->event_team_id = $eT->id;
-                            //             $eventTeamRound->event_round_id = $eR->id;
-                            //             $eventTeamRound->save(false);
-                            //         endforeach;
-                            //     endforeach;
-                            // } catch (Exception $e) {
-                            //     throw new Exception("Duplicate Entry");
-                            // }
-                        //
+                        // create event team rounds
+                            $numOfRounds = count($model->eventRounds);
+                            try {
+                                foreach ($model->eventTeams as $eT) :
+                                    foreach ($model->eventRounds as $eR) :
+                                        $eventTeamRound = new EventTeamRound();
+                                        $eventTeamRound->event_team_id = $eT->id;
+                                        $eventTeamRound->event_round_id = $eR->id;
+                                        $eventTeamRound->save(false);
+                                    endforeach;
+                                endforeach;
+                            } catch (Exception $e) {
+                                throw new Exception("Duplicate Entry");
+                            }
+
                         // //create event_round_match
                         $seed = range(1,$numOfTeams);
                         $away = array_splice($seed,(count($seed)/2));
                         $home = $seed;
-                        // $rounds = count($seed) - 1;
+                        //$rounds = count($seed) - 1;
+                        $zzz = 0;
                         for ($i=0; $i < count($home)+count($away)-1; $i++){
                             for ($j=0; $j<count($home); $j++){
-                                $eventTeamHome = EventTeam::find()->where(['team_order' => $home[$j]])->one();
-                                $eventTeamAway = EventTeam::find()->where(['team_order' => $away[$j]])->one();
-
+                                $zzz++;
+                                $eventTeamHome = EventTeam::find()->where(['team_order' => $home[$j], 'event_id' => $model->id])->one();
+                                $eventTeamAway = EventTeam::find()->where(['team_order' => $away[$j], 'event_id' => $model->id])->one();
 
                                 $eventRoundMatch = new EventRoundMatch();
-                                $eventRoundMatch->event_team1_round_id = $eventTeamHome->eventTeamRounds[$i]->id;
-                                $eventRoundMatch->event_team2_round_id = $eventTeamAway->eventTeamRounds[$i]->id;
+                                $eventRoundMatch->event_team1_round_id = (string) $eventTeamHome->eventTeamRounds[$i]->id;
+                                $eventRoundMatch->event_team2_round_id = (string) $eventTeamAway->eventTeamRounds[$i]->id;
                                 $eventRoundMatch->match_status_id = 1;
                                 $eventRoundMatch->team1_score = 0;
                                 $eventRoundMatch->team2_score = 0;
                                 $eventRoundMatch->save(false);
                             }
+
                             if(count($home)+count($away)-1 > 2){
                                 $splicedHome = array_splice($home,1,1);
                                 $shiftedSplicedHome = array_shift($splicedHome);
@@ -306,7 +308,7 @@ class EventController extends Controller
                         }
 
 
-                $var = "RR" . $var . "numOf" . $numOfTeams . " bye" . $bye;
+                $var = "RR" . $var . "numOf" . $numOfTeams . " zzz " . $zzz;
                 }
                     break;
                 case "Plain Ranking":
