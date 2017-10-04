@@ -20,14 +20,16 @@ $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="event-index">
+    <p>
+        <?= Html::button('Create Event', ['value' => Url::to('/yii2/backend/web/event/create/'), 'class' => 'btn btn-success', 'id' => 'modalButton']) ?>
+    </p>
     <?php Modal::begin([
-      'header' => '<h2>Hello world</h2>',
-      'toggleButton' => ['label' => 'click me'],
-      'id' => 'modal',
-      'size' => 'modal-lg',
+          'header' => '<h2>Hello world</h2>',
+          'id' => 'modal',
+          'size' => 'modal-lg',
       ]);
 
-          echo "<div id='modelContent'></div>";
+          echo "<div id='modalContent'></div>";
       Modal::end(); ?>
 
 
