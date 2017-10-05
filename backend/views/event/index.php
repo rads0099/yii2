@@ -1,12 +1,15 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+//use yii\grid\GridView;
+use kartik\grid\GridView;
 use backend\assets\AdminLteAsset;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use common\widgets\Alert;
+use yii\bootstrap\Modal;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\EventSearch */
@@ -17,20 +20,44 @@ $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="event-index">
+    <?php Modal::begin([
+      'header' => '<h2>Hello world</h2>',
+      'toggleButton' => ['label' => 'click me'],
+      'id' => 'modal',
+      'size' => 'modal-lg',
+      ]);
 
-   <!--  <h1><?= Html::encode($this->title) ?></h1>
+          echo "<div id='modelContent'></div>";
+      Modal::end(); ?>
+
+
+
+   <!--  <h1></h1>
     --> <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <p>
-        <?= Html::a('Create Event', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
     <?= GridView::widget([
+        'id' => 'install-grid',
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
+        'resizableColumns' => false,
+        'showPageSummary' => false,
+        'headerRowOptions' => ['class' => 'kartik-sheet-style'],
+        'filterRowOptions' => ['class' => 'kartik-sheet-style'],
+        'responsive' => true,
+        'hover' => true,
+        'panel' => [
+            'heading' => '<h3 class="panel-title"> Events</h3>',
+            'type' => 'primary',
+            'showFooter' => false
+        ],
+        // set your toolbar
+        'toolbar' => [
+            ['content' =>
+                Html::button('Create Event ', ['value'=>Url::to('Create'),'class' => 'btn btn-success create-backup margin-right5','id' => 'modalButton']),
+            ],
+        ],
+        //'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
             // 'id',
             'event',
             'description',
@@ -70,8 +97,8 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'champ',
             // 'first',
             // 'second',
-            'date_start',
-            'date_end',
+            //'date_start',
+            //'date_end',
             [
                 'class' => 'yii\grid\ActionColumn',
                 'template' => '{myButton} {view} {update} {delete}',

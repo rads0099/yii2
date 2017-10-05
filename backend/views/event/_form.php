@@ -12,13 +12,14 @@ use common\models\MatchSystem;
 use common\models\Sort;
 use common\models\Order;
 use kartik\select2\Select2;
+use yii\bootstrap\Modal;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Event */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="event-form">
+<div class="event-form" id="modelContent">
 
     <?php $form = ActiveForm::begin(); ?>
 

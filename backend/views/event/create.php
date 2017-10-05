@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 
 /* @var $this yii\web\View */
@@ -12,9 +13,10 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="event-create">
 	<p>
-    <?= Html::a('Return to view', ['event/index'], ['class' => 'fa fa-arrow-circle-left btn btn-primary']) ?>
+    <?= Html::button('Return to view', ['value'=>Url::to('index')], ['class' => 'fa fa-arrow-circle-left btn btn-primary']) ?>
+
      </p>
-    <?= $this->render('_form', [
+    <?= $this->renderAjax('_form', [
         'model' => $model,
     ]) ?>
 

@@ -117,7 +117,7 @@ class EventController extends Controller
                 Yii::$app->session->setFlash('success','Successfully Create Event');
                 return $this->redirect(['view', 'id' => $model->id]);
             } else {
-                return $this->render('create', [
+                return $this->renderAjax('create', [
                     'model' => $model,
                 ]);
             }
