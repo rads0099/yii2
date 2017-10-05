@@ -23,7 +23,7 @@ $fieldOptions2 = [
     <div class="login-logo">
         <div class="row">
             <div class="col-md-2">
-                <img src="../../frontend/web/images/cca-icon.png" class="animated fadeIn" width="60spx"/>
+                <img src="../../frontend/web/images/cca-icon.png" class="animated fadeIn" width="60px"/>
             </div>
             <div class="col-md-10">
                 <h3>City College ofAngeles</h3>

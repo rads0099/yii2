@@ -38,8 +38,9 @@
                     ['label' => 'Occasion', 'icon' => 'building-o', 'url' => ['occasion/index']],
                     ['label' => 'Player', 'icon' => 'user', 'url' => ['player/index']],
                     ['label' => 'Team', 'icon' => 'users', 'url' => ['#']],
+                    ['label' => 'Backup & Restore', 'icon' => 'file-code-o', 'url' => ['backuprestore/index']],
                     ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
-                
+
                     /*[
                         'label' => 'Same tools',
                         'icon' => 'share',
