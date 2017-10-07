@@ -20,20 +20,25 @@ $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="event-index">
+
     <?php Modal::begin([
-      'header' => '<h2>Hello world</h2>',
-      'toggleButton' => ['label' => 'click me'],
-      'id' => 'modal',
-      'size' => 'modal-lg',
-      ]);
+    'header' => '<h2>Create Event</h2>',
+    //'toggleButton' => ['label' => 'click me'],
+    'id' => 'modal',
+    'size' => 'modal-md',
+    ]);
 
-          echo "<div id='modelContent'></div>";
-      Modal::end(); ?>
+        echo "<div id='modalContent'></div>";
 
-
+    Modal::end(); ?>
 
    <!--  <h1></h1>
     --> <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+
+    <div>
+    <?=    Html::button('Create Event ', ['value' => Url::to('update'),'class' => 'btn btn-success create-backup margin-right5','id' => 'modalEdit']) ?>
+
+    </div>
 
     <?= GridView::widget([
         'id' => 'install-grid',
@@ -52,7 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
         // set your toolbar
         'toolbar' => [
             ['content' =>
-                Html::button('Create Event ', ['value'=>Url::to('Create'),'class' => 'btn btn-success create-backup margin-right5','id' => 'modalButton']),
+                Html::button('Create Event ', ['value' => Url::to('create'),'class' => 'btn btn-success create-backup margin-right5','id' => 'modalButton'])
             ],
         ],
         //'filterModel' => $searchModel,
@@ -101,11 +106,12 @@ $this->params['breadcrumbs'][] = $this->title;
             //'date_end',
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{myButton} {view} {update} {delete}',
+                'template' => '{myButton}{editButton} {view} {update} {delete}',
                 'buttons' => [
                     'myButton' => function($url, $model, $key) {     // render your custom button
                         return Html::a('Finalize', ['finalize', 'id' => $model->id], ['class' => 'btn btn-success btn-xs', 'data-pjax' => 0]);
                     }
+
                 ]
             ],
         ],

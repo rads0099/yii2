@@ -1,5 +1,5 @@
 $(function(){
-  //get the click event button
+  //get the click event
   $('#modalButton').click(function(){
       $('#modal').modal('show')
       .find('#modalContent')

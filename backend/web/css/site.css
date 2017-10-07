@@ -107,6 +107,18 @@ a.desc:after {
     background-color: #00a65a !important;
 }
 
+.modal-header {
+    border-bottom-color: #f4f4f4;
+    background-color: green;
+    color: white;
+}
+.modal-header .close {
+    margin-top: -2px;
+    color: white;
+    display: inline-block;
+    z-index: 2;
+}
+
 /* align the logout "link" (button in form) of the navbar */
 .nav li > form > button.logout {
     padding: 15px;
