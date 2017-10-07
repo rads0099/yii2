@@ -73,6 +73,7 @@ class BackuprestoreController extends Controller {
 
         $create_query = preg_replace('/^CREATE TABLE/', 'CREATE TABLE IF NOT EXISTS', $create_query);
         $create_query = preg_replace('/AUTO_INCREMENT\s*=\s*([0-9])+/', '', $create_query);
+        $tableName = ($tableName == "`order`") ? "order" : $tableName;
         if ($this->fp) {
             $this->writeComment('TABLE `' . addslashes($tableName) . '`');
             $final = 'DROP TABLE IF EXISTS `' . addslashes($tableName) . '`;' . PHP_EOL . $create_query . PHP_EOL . PHP_EOL;
@@ -99,6 +100,8 @@ class BackuprestoreController extends Controller {
             $valueString = join("','", $itemValues);
             $valueString = "('" . $valueString . "'),";
             $values = "\n" . $valueString;
+            $values = str_replace("''", "NULL", $values);
+            $tableName = ($tableName == "`order`") ? "order" : $tableName;
             if ($values != "") {
                 $data_string .= "INSERT INTO `$tableName` (`$items`) VALUES" . rtrim($values, ",") . ";" . PHP_EOL;
             }
@@ -177,16 +180,10 @@ class BackuprestoreController extends Controller {
             return $this->render('index');
         }
         foreach ($tables as $tableName) {
-            if ($tableName == "order") {
-                $tableName = '`' . $tableName  . '`';
-            }
-            $this->getColumns($tableName);
+            $this->getColumns(($tableName == "order") ? '`' . $tableName  . '`' : $tableName);
         }
         foreach ($tables as $tableName) {
-            if ($tableName == "order") {
-                $tableName = '`' . $tableName  . '`';
-            }
-            $this->getData($tableName);
+            $this->getData(($tableName == "order") ? '`' . $tableName  . '`' : $tableName);
         }
         $this->EndBackup();
 

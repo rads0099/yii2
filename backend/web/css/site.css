@@ -106,6 +106,7 @@ a.desc:after {
 .skin-blue .main-header .logo{
     background-color: #00a65a !important;
 }
+<<<<<<< HEAD
 
 .modal-header {
     border-bottom-color: #f4f4f4;
@@ -118,6 +119,8 @@ a.desc:after {
     display: inline-block;
     z-index: 2;
 }
+=======
+>>>>>>> c2299e5d9b1a3cc3818af4c823500cfe25ff6090
 
 /* align the logout "link" (button in form) of the navbar */
 .nav li > form > button.logout {

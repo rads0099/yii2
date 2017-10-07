@@ -57,7 +57,11 @@ $this->params['breadcrumbs'][] = $this->title;
         // set your toolbar
         'toolbar' => [
             ['content' =>
+<<<<<<< HEAD
                 Html::button('Create Event ', ['value' => Url::to('create'),'class' => 'btn btn-success create-backup margin-right5','id' => 'modalButton'])
+=======
+                Html::button('Create Event ', ['value'=>Url::to('Create'),'class' => 'btn btn-success create-backup margin-right5','id' => 'modalButton']),
+>>>>>>> c2299e5d9b1a3cc3818af4c823500cfe25ff6090
             ],
         ],
         //'filterModel' => $searchModel,
