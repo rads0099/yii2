@@ -45,11 +45,12 @@ class BackuprestoreController extends Controller {
         if (file_exists($sqlFile)) {
             $sqlArray = file_get_contents($sqlFile);
 
-            $tables = $this->getTables();
             $query =  "";
-            foreach ($tables as $tableName) {
-                $query = $query."drop table if exists $tableName; ";
-            }
+            //this section comment by the error occurs in the restore
+            // $tables = $this->getTables();
+            // foreach ($tables as $tableName) {
+            //     $query = $query."drop table if exists $tableName; ";
+            // }
 
             $LastQuery = "SET FOREIGN_KEY_CHECKS = 0; $query SET FOREIGN_KEY_CHECKS = 1;";
 
