@@ -142,7 +142,6 @@ class BackuprestoreController extends Controller {
         }
         fwrite($this->fp, 'SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;' . PHP_EOL);
         fwrite($this->fp, 'SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;' . PHP_EOL);
-        fwrite($this->fp, 'SET @OLD_SQL_MODE=@@SESSION.sql_mode, SESSION sql_mode = \'NO_AUTO_VALUE_ON_ZERO\';' . PHP_EOL);
         fwrite($this->fp, '-- -------------------------------------------' . PHP_EOL);
         $this->writeComment('START BACKUP');
         return true;
@@ -152,7 +151,6 @@ class BackuprestoreController extends Controller {
         fwrite($this->fp, '-- -------------------------------------------' . PHP_EOL);
         fwrite($this->fp, 'SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;' . PHP_EOL);
         fwrite($this->fp, 'SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;' . PHP_EOL);
-        fwrite($this->fp, 'SET SESSION sql_mode = @OLD_SQL_MODE;' . PHP_EOL);
 
         if ($addcheck) {
             fwrite($this->fp, 'COMMIT;' . PHP_EOL);
@@ -333,7 +331,7 @@ class BackuprestoreController extends Controller {
             $flashMsg = 'Error: Wrong file name !';
         }
         $this->execSqlFile($sqlFile);
-        
+
         \Yii::$app->getSession()->setFlash($flashError, $flashMsg);
         $this->redirect(array('index'));
     }
