@@ -8,12 +8,14 @@
         )
     ];
     ?>
-
-    <?php if (Yii::$app->session->hasFlash('success')): ?>
+<!--This section comment to not duplicate the flash message-->
+    <!-- <?php if (Yii::$app->session->hasFlash('success')): ?>
         <div class="alert alert-success">
             <?php echo Yii::$app->session->getFlash('success'); ?>
         </div>
-    <?php endif; ?>
+    <?php endif; ?> -->
+    <!--End Comment-->
+
 
 
     <div class="row">
